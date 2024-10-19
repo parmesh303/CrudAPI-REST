@@ -1,71 +1,43 @@
 package com.lwpp.rest.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lwpp.rest.dao.CoursDao;
 import com.lwpp.rest.entity.Course;
 import com.lwpp.rest.service.CourseService;
-
 @Service
 public class CourseServiceImpl implements CourseService {
-	List<Course> list;
 
-	public CourseServiceImpl() {
-		list = new ArrayList<>();
+    @Autowired
+    private CoursDao coursDao;
 
-		list.add(new Course(1, "Java", "This is java course"));
-		list.add(new Course(2, "NodeJs", "This is NodeJs course"));
-	}
+    @Override
+    public List<Course> getCourses() {
+        return coursDao.findAll();
+    }
 
-	@Override
-	public List<Course> getCourses() {
+    @Override
+    public Course getCourseById(long courseId) {
+        return coursDao.findById(courseId).orElse(null); // use findById instead of getOne
+    }
 
-		return list;
-	}
+    @Override
+    public Course addCourse(Course course) {
+        coursDao.save(course);
+        return course;
+    }
 
-	@Override
-	public Course getCourseById(long courseId) {
+    @Override
+    public Course updateCourse(Course course) {
+        coursDao.save(course);
+        return course;
+    }
 
-		Course c = null;
-		for (Course course : list) {
-			if (course.getId() == courseId)
-				;
-			{
-				c = course;
-				break;
-			}
-		}
-		return c;
-	}
-
-	@Override
-	public Course addCourse(Course course) {
-		list.add(course);
-		return course;
-	}
-
-	@Override
-	public Course updateCourse(Course course) {
-
-		list.forEach(e->{
-			
-			if (e.getId()==course.getId()) {
-				e.setTitle(course.getTitle());
-				e.setDescription(course.getDescription());
-				
-			}
-		});
-		return course;
-	}
-
-	@Override
-	public void deleteCourse(long parseLong) {
-
-		list=this.list.stream().filter(e->e.getId()!=parseLong).collect(Collectors.toList());
-	}
-
-
+    @Override
+    public void deleteCourse(long courseId) {
+        coursDao.deleteById(courseId);
+    }
 }
